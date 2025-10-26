@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Success Receipt</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "success-green": "#4CAF50" /* Darker green for tick/background */,
+              "bg-light": "#f3f4f6" /* Light gray background */,
+              "text-dark": "#374151" /* Darker gray for main text */,
+              "text-muted": "#6B7280" /* Muted gray for details */,
+              "cashback-light":
+                "#d9f99d" /* Very light green for banner background */,
+              "cashback-dark": "#84cc16" /* Darker green for banner text */,
+              // UPDATED: YES BANK color to blue as per image
+              "yes-bank-blue":
+                "#0033A0" /* Blue for YES BANK style from image */,
+              "button-primary": "#c0f78a", // Lighter green for the main Done button
+              "button-hover": "#a7f369", // Hover state for Done button
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #f3f4f6;
+        font-family: "Inter", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+      }
+      #app-container {
+        max-width: 420px;
+        width: 100%;
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      }
+      .success-box {
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #4caf50; /* success-green (Full Green Fill) */
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
+        margin: 20px auto;
+      }
+      .app-button {
+        padding: 12px 0;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: background-color 0.2s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .pay-again-btn {
+        background-color: white;
+        border: 1px solid #e5e7eb;
+        color: #374151;
+      }
+      .done-btn {
+        background-color: #c0f78a; /* button-primary */
+        color: #374151;
+      }
+      .done-btn:hover {
+        background-color: #a7f369; /* button-hover */
+      }
+
+      .money-notes-icon {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        background-color: #ecfccb;
+        border-radius: 8px;
+        padding: 5px;
+        transform: rotate(-5deg);
+      }
+      /* **बदलाव #1: CSS अपडेट**
+         'powered-by-text' को इनलाइन और वर्टिकल अलाइनमेंट के लिए सेट किया गया है ।*/
+      .powered-by-text {
+        color: #9ca3af; /* A lighter gray for "Powered by" */
+        font-size: 0.75rem; /* text-xs */
+        display: inline-block; /* इसे लोगो के बगल में एक लाइन में रखने के लिए */
+        vertical-align: middle; /* वर्टिकल सेंटर अलाइनमेंट के लिए */
+      }
+      .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem; /* space-x-6 (increased gap) */
+        padding: 0.5rem 0;
+      }
+      .upi-logo {
+        height: 20px; /* Adjust height as needed */
+        width: auto;
+      }
+      .rupay-logo {
+        height: 20px; /* Adjust height as needed */
+        width: auto;
+      }
+      .yes-bank-logo {
+        height: 18px; /* Adjust height as needed */
+        width: auto;
+      }
+    </style>
+  </head>
+  <body class="bg-bg-light">
+    <div id="app-container">
+      <header class="flex justify-between items-center p-4 bg-white">
+        <button onclick="toggleInput(true)" id="back-button">
+          <svg
+            class="w-6 h-6 text-gray-700"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0m0 0z" fill="none"></path>
+            <path d="M15 6l-6 6l6 6"></path>
+          </svg>
+        </button>
+        <div class="flex space-x-4">
+          <svg
+            class="w-6 h-6 text-gray-700"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0m0 0z" fill="none"></path>
+            <path d="M6 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
+            <path d="M18 6m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
+            <path d="M18 18m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
+            <path d="M8.7 10.7l6.6 -3.4"></path>
+            <path d="M8.7 13.3l6.6 3.4"></path>
+          </svg>
+          <svg
+            class="w-6 h-6 text-gray-700"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0m0 0z" fill="none"></path>
+            <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+            <path d="M12 9l0 4"></path>
+            <path d="M12 16l0 .01"></path>
+          </svg>
+        </div>
+      </header>
+
+      <div id="input-panel" class="p-4 transition-all duration-300">
+        <h2 class="text-xl font-bold text-text-dark mb-4 border-b pb-2">
+          Receipt Details
+        </h2>
+        <form id="transaction-form" class="space-y-4">
+          <div>
+            <label
+              for="recipient_name"
+              class="block text-sm font-medium text-text-dark"
+              >Recipient Name</label
+            >
+            <input
+              type="text"
+              id="recipient_name"
+              value="Deepak Thapa"
+              required
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 border"
+            />
+          </div>
+
+          <div>
+            <label for="amount" class="block text-sm font-medium text-text-dark"
+              >Amount (₹)</label
+            >
+            <input
+              type="number"
+              id="amount"
+              value="50"
+              step="0.01"
+              required
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 border"
+            />
+          </div>
+
+          <div>
+            <label
+              for="cashback_percent"
+              class="block text-sm font-medium text-text-dark"
+              >Cashback Percentage (%)</label
+            >
+            <input
+              type="number"
+              id="cashback_percent"
+              value="1.26"
+              step="0.01"
+              required
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 border"
+            />
+          </div>
+
+          <div class="flex space-x-4">
+            <div class="flex-1">
+              <label
+                for="date_display"
+                class="block text-sm font-medium text-text-dark"
+                >Date</label
+              >
+              <input
+                type="date"
+                id="date_display"
+                required
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 border"
+              />
+            </div>
+            <div class="flex-1">
+              <label
+                for="time_display"
+                class="block text-sm font-medium text-text-dark"
+                >Time</label
+              >
+              <input
+                type="time"
+                id="time_display"
+                required
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 border"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label for="upi_id" class="block text-sm font-medium text-text-dark"
+              >UPI Transaction ID</label
+            >
+            <input
+              type="text"
+              id="upi_id"
+              value="527780830101"
+              required
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 border"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full py-3 px-4 mt-6 bg-success-green text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-150 focus:outline-none focus:ring-2 focus:ring-success-green focus:ring-offset-2"
+          >
+            Generate Receipt
+          </button>
+        </form>
+      </div>
+
+      <div
+        id="receipt-view"
+        class="hidden text-center p-6 transition-all duration-300"
+      ></div>
+    </div>
+
+    <script>
+      const alertMessage = (message, bgColor) => {
+        const messageBox = document.createElement("div");
+        messageBox.textContent = message;
+        messageBox.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 ${bgColor} text-white px-4 py-2 rounded-lg shadow-xl z-50 transition-opacity duration-300`;
+        document.body.appendChild(messageBox);
+
+        setTimeout(() => {
+          messageBox.classList.add("opacity-0");
+          messageBox.addEventListener("transitionend", () =>
+            messageBox.remove()
+          );
+        }, 3000);
+      };
+
+      const toggleInput = (showInput) => {
+        const inputPanel = document.getElementById("input-panel");
+        const receiptView = document.getElementById("receipt-view");
+        const appContainer = document.getElementById("app-container");
+
+        if (showInput) {
+          inputPanel.classList.remove("hidden");
+          receiptView.classList.add("hidden");
+          appContainer.style.backgroundColor = "white";
+          appContainer.classList.add("mt-0");
+        } else {
+          inputPanel.classList.add("hidden");
+          receiptView.classList.remove("hidden");
+          appContainer.style.backgroundColor = "#f3f4f6";
+          appContainer.classList.remove("mt-0");
+        }
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("transaction-form");
+        const resultDiv = document.getElementById("receipt-view");
+        const dateInput = document.getElementById("date_display");
+        const timeInput = document.getElementById("time_display");
+
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+
+        dateInput.value = `${year}-${month}-${day}`;
+        timeInput.value = `${hours}:${minutes}`;
+
+        const formatAmount = (amount) => {
+          const num = parseFloat(amount) || 0;
+          return num.toLocaleString("en-IN", {
+            style: "currency",
+            currency: "INR",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          });
+        };
+
+        const formatDateTime = (dateString, timeString) => {
+          try {
+            const date = new Date(`${dateString}T${timeString}:00`);
+            const formattedDate = date.toLocaleDateString("en-IN", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            });
+            const formattedTime = date
+              .toLocaleTimeString("en-IN", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })
+              .replace(" ", "");
+
+            return `${formattedDate} • ${formattedTime}`;
+          } catch (e) {
+            console.error("Date formatting failed:", e);
+            return "Date Error";
+          }
+        };
+
+        const generateReceiptHtml = (
+          recipientName,
+          amount,
+          cashbackPercent,
+          dateStr,
+          timeStr,
+          upiId
+        ) => {
+          const formattedAmount = formatAmount(amount);
+          const formattedDateTime = formatDateTime(dateStr, timeStr);
+
+          // NOTE: If you want to use the 3D checkmark image (image_1467da.png),
+          // replace the SVG below with the image tag:
+          // <img src="image_1467da.png" alt="Success Checkmark" class="w-24 h-24" style="margin: 20px auto;"/>
+          const successCheckmarkSvg = `
+                            <div class="success-box">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     class="w-12 h-12 text-white"
+                                     viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"
+                                     fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0m0 0z" fill="none"></path>
+                                    <path d="M5 12l5 5l10 -10"></path>
+                                </svg>
+                            </div>
+                        `;
+
+          const moneyNotesSvg = `
+                            <div class="money-notes-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-success-green" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0m0 0z" fill="none"></path>
+                                    <rect x="3" y="7" width="15" height="10" rx="2" transform="rotate(-5 10.5 12)" fill="#84cc16" stroke="none"></rect>
+                                    <rect x="7" y="5" width="15" height="10" rx="2" transform="rotate(5 14.5 10)" fill="#a7f369" stroke="none"></rect>
+                                    <circle cx="12" cy="12" r="1.5" fill="white" transform="rotate(-5 12 12)"></circle>
+                                </svg>
+                            </div>
+                        `;
+
+          const copyIconSvg = `
+                            <svg onclick="copyUpiId('${upiId}')" class="w-4 h-4 ml-2 text-gray-500 cursor-pointer hover:text-gray-900 transition-colors" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0m0 0z" fill="none"></path>
+                                <path d="M8 8m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"></path>
+                                <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2"></path>
+                            </svg>
+                        `;
+
+          const confetti = `
+                            <div class="absolute inset-0 overflow-hidden opacity-75">
+                                <span class="absolute top-1/4 left-1/4 w-2 h-2 rounded-full bg-pink-400"></span>
+                                <span class="absolute top-1/2 right-1/4 w-1 h-1 rounded-full bg-yellow-400 transform rotate-45"></span>
+                                <span class="absolute top-3/4 left-1/3 w-2 h-1 bg-blue-400 transform rotate-12"></span>
+                                <span class="absolute top-1/4 right-1/3 w-1 h-2 bg-purple-400 transform -rotate-30"></span>
+                            </div>
+                        `;
+
+          return `
+                        <div class="bg-white p-4 mx-2 rounded-lg shadow-lg">
+                            ${successCheckmarkSvg}
+
+                            <p class="text-xl font-semibold text-text-dark mt-4">Payment successful</p>
+                            <p class="text-xl font-semibold text-text-dark mt-1">to ${recipientName}</p>
+
+                            <p class="text-4xl font-extrabold text-text-dark mt-6">${formattedAmount}</p>
+
+                            <div class="relative mt-8 p-3 rounded-xl bg-cashback-light flex items-center justify-center space-x-3 overflow-hidden">
+                                ${confetti}
+                                ${moneyNotesSvg}
+                                <p class="text-base font-semibold text-cashback-dark z-10">You earned ${cashbackPercent}% cashback</p>
+                            </div>
+
+                            <div class="mt-8 text-center">
+                                <p class="text-base font-medium text-text-muted">${formattedDateTime}</p>
+                                <div class="flex items-center justify-center mt-2">
+                                    <p class="text-sm text-text-muted">UPI Transaction ID: <span class="text-text-dark font-semibold">${upiId}</span></p>
+                                    ${copyIconSvg}
+                                </div>
+
+                                <button class="text-success-black font-semibold text-sm mt-3 hover:underline">
+                                    View Details
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <div class="flex justify-between space-x-4 mt-8 px-6 pb-6">
+                            <button class="flex-1 app-button pay-again-btn">Pay Again</button>
+                            <button class="flex-1 app-button done-btn">Done</button>
+                        </div>
+
+                        <div class="flex items-center justify-center mt-4 pb-4">
+                            <p class="powered-by-text mr-3">Powered by</p>
+                            
+                            <div class="logo-container">
+
+                                <img src="UPILogo.jpg" alt="UPI Logo" class="upi-logo" />
+
+                                <img src="RUPAYLogo.jpg" alt="RuPay Logo" class="rupay-logo" />
+
+                                <img src="yes_bank.jpg" alt="YES BANK Logo" class="yes-bank-logo" />
+
+                            </div>
+                        </div>
+                    `;
+        };
+
+        window.copyUpiId = (text) => {
+          const tempInput = document.createElement("textarea");
+          tempInput.value = text;
+          document.body.appendChild(tempInput);
+          tempInput.select();
+          try {
+            document.execCommand("copy");
+            alertMessage("UPI ID Copied!", "bg-success-green");
+          } catch (err) {
+            alertMessage("Could not copy text.", "bg-red-500");
+          }
+          document.body.removeChild(tempInput);
+        };
+
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          try {
+            const recipientName =
+              document.getElementById("recipient_name").value;
+            const amount = document.getElementById("amount").value;
+            const cashbackPercent =
+              document.getElementById("cashback_percent").value;
+            const dateStr = document.getElementById("date_display").value;
+            const timeStr = document.getElementById("time_display").value;
+            const upiId = document.getElementById("upi_id").value;
+
+            if (
+              !recipientName ||
+              !amount ||
+              !cashbackPercent ||
+              !dateStr ||
+              !timeStr ||
+              !upiId
+            ) {
+              alertMessage("Please fill in all fields.", "bg-red-500");
+              return;
+            }
+
+            const cardHtml = generateReceiptHtml(
+              recipientName,
+              amount,
+              cashbackPercent,
+              dateStr,
+              timeStr,
+              upiId
+            );
+            resultDiv.innerHTML = cardHtml;
+
+            toggleInput(false);
+          } catch (error) {
+            console.error("Receipt generation failed:", error);
+            alertMessage(
+              `Error: Receipt generation failed. Check console for details.`,
+              "bg-red-700"
+            );
+          }
+        });
+
+        toggleInput(true);
+      });
+    </script>
+  </body>
+</html>
